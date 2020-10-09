@@ -88,7 +88,7 @@ curl_setopt($curl, CURLOPT_POSTFIELDS, $data1);
 curl_setopt($curl, CURLOPT_HTTPHEADER, $headers1);
 $response = curl_exec($curl);
 
-$url = "https://www.googleapis.com/drive/v2/files/". $id;
+$url = "https://www.googleapis.com/drive/v3/files/". $id;
 $data = array(
     "name" => $filename,
     "mimeType"  => $filety
