@@ -31,24 +31,18 @@ $filety = $_FILES['file']['type'];
 $tmpfile = $_FILES['file']['tmp_name'];
 $filename = basename($_FILES['file']['name']);
 
-                     
 $data = array(
   'uploaded_file' => curl_file_create($tmpfile, $_FILES['image']['type'], $filename),
-     "name" => $filename,
-    "mimeType"  => $filety,
-    
-    "kind" => "drive#parentReference",
-    'parents' => array("1o10m9ouaowW7BLQYoewMBpVdkiKCiCdZ")
+    'addParents' => "1o10m9ouaowW7BLQYoewMBpVdkiKCiCdZ"
 );
 
-$data1 = json_encode($data);
 
-$url = "https://www.googleapis.com/drive/v3/files";
+$url = "https://www.googleapis.com/upload/drive/v2/files";
 
 $headers = array(
     
         "Authorization: Bearer ".$token,
-               'Content-Type: application/json'
+            
        
     );
         
@@ -59,16 +53,55 @@ curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
 curl_setopt($ch, CURLOPT_BINARYTRANSFER, TRUE);
 curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 curl_setopt($ch, CURLOPT_POST, true); 
-
-curl_setopt($ch, CURLOPT_POSTFIELDS, $data1);
-
+curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
 $output = curl_exec($ch);
 
+$output1 = json_decode($output);
 
-if(curl_getinfo($ch, CURLINFO_HTTP_CODE) != 200) { 
-    echo "Something went wrong!"; 
-} else { 
+$id = $output1->id;
+
+$url = "https://www.googleapis.com/drive/v2/files/" . $id . "/parents";
+
+$headers1 = array(
     
-    header("location: https://iknowodonto.com/journal-submissao/");
-  
-}
+        "Authorization: Bearer ".$token,
+            'Content-Type: application/json'
+       
+    );
+
+
+$data = array(
+
+     'id' => "1o10m9ouaowW7BLQYoewMBpVdkiKCiCdZ"
+ 
+);
+
+$data1 = json_encode($data);
+var_dump($data);
+
+
+$curl = curl_init();
+curl_setopt($curl, CURLOPT_URL, $url);
+curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+curl_setopt($ch, CURLOPT_POST, true); 
+curl_setopt($curl, CURLOPT_POSTFIELDS, $data1);
+curl_setopt($curl, CURLOPT_HTTPHEADER, $headers1);
+$response = curl_exec($curl);
+
+$url = "https://www.googleapis.com/drive/v2/files/". $id;
+$data = array(
+    "name" => $filename,
+    "mimeType"  => $filety
+);
+$data1 = json_encode($data);
+
+
+
+$curl = curl_init();
+curl_setopt($curl, CURLOPT_URL, $url);
+curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'PATCH');
+curl_setopt($curl, CURLOPT_POSTFIELDS, $data1);
+curl_setopt($curl, CURLOPT_HTTPHEADER, $headers1);
+$response = curl_exec($curl);
+var_dump($response);
